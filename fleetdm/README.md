@@ -1,21 +1,80 @@
-# FleetDM on Proxmox: Terraform + Ansible one-click starter
+# FleetDM on Proxmox: Terraform + Ansible + Pipeline
 
-This repo is a starter kit for deploying a 3-VM FleetDM stack on Proxmox:
+This repo targets your three-node FleetDM layout:
 
-- `fleet-app`
-- `fleet-db`
-- `fleet-redis`
+- fleet-app: 192.168.68.240
+- fleet-db: 192.168.68.241
+- fleet-redis: 192.168.68.242
 
-It also creates a host enrolment script you can run on Ubuntu/Debian VMs or LXCs to join Fleet as a host.
+## 1. Set all users and passwords in one file
 
-## Workflow
+Copy the example credentials file:
 
-1. Create a Proxmox cloud-init Ubuntu/Debian template with QEMU guest agent installed.
-2. Fill in `terraform/terraform.tfvars`.
-3. Run `./scripts/deploy.sh`.
-4. Log in to `https://<fleet_app_ip>:8080` or `http://<fleet_app_ip>:8080` depending on your reverse proxy/TLS setup.
-5. Generate/set an enrol secret, then run `./scripts/render-enrol-script.sh`.
+```bash
+cp ansible/group_vars/all/credentials.yml.example ansible/group_vars/all/credentials.yml
+nano ansible/group_vars/all/credentials.yml
+```
 
-## Important
+Set these values there:
 
-This is a homelab-friendly baseline. For production, add TLS, backups, firewalling, restricted DB/Redis network ACLs, proper secret management, monitoring, and Fleet license/config as required.
+- `ansible_user`
+- `fleet_mysql_root_user`
+- `fleet_mysql_root_password`
+- `fleet_mysql_database`
+- `fleet_mysql_user`
+- `fleet_mysql_password`
+- `fleet_redis_user`
+- `fleet_redis_password`
+- `fleet_server_private_key`
+- optional `fleet_admin_email` / `fleet_admin_password`
+
+`credentials.yml` is ignored by Git via `.gitignore`.
+
+For safer storage, encrypt it:
+
+```bash
+ansible-vault encrypt ansible/group_vars/all/credentials.yml
+```
+
+Run playbooks with:
+
+```bash
+ansible-playbook -i ansible/inventory/dev.ini ansible/site.yml --ask-vault-pass
+```
+
+## 2. Deploy with Ansible
+
+```bash
+cd ansible
+ansible-playbook -i inventory/dev.ini site.yml --ask-vault-pass
+```
+
+## 3. Terraform
+
+Each environment has its own Terraform folder under:
+
+```text
+terraform/environments/dev
+terraform/environments/uat
+terraform/environments/prd
+```
+
+Copy the example tfvars file in the target environment and fill in Proxmox details:
+
+```bash
+cd terraform/environments/dev
+cp terraform.tfvars.example terraform.tfvars
+terraform init
+terraform plan
+terraform apply
+```
+
+## 4. Pipeline
+
+The Azure DevOps pipeline lives at:
+
+```text
+pipelines/azure-pipelines.yml
+```
+
+Store sensitive Terraform and Ansible values in Azure DevOps secret variables or variable groups. Do not commit real passwords.

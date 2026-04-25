@@ -1,0 +1,12 @@
+services:
+  fleet:
+    image: {{ fleet_app_image }}
+    container_name: fleet
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "{{ fleet_http_port }}:{{ fleet_http_port }}"
+    volumes:
+      - /opt/fleet/certs:/opt/fleet/certs:ro
+    command: ["fleet", "serve"]

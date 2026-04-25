@@ -1,0 +1,22 @@
+---
+- name: Create Fleet MySQL directory
+  ansible.builtin.file:
+    path: /opt/fleet-mysql
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy MySQL compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /opt/fleet-mysql/docker-compose.yml
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart fleet mysql compose
+
+- name: Start MySQL compose stack
+  community.docker.docker_compose_v2:
+    project_src: /opt/fleet-mysql
+    state: present

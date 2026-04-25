@@ -1,0 +1,12 @@
+bind 0.0.0.0 ::1
+protected-mode yes
+port {{ fleet_redis_port }}
+supervised systemd
+daemonize yes
+pidfile /run/redis/redis-server.pid
+loglevel notice
+logfile /var/log/redis/redis-server.log
+databases 16
+dir /var/lib/redis
+appendonly no
+requirepass {{ fleet_redis_password }}

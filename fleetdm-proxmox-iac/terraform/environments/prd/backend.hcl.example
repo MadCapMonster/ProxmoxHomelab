@@ -1,4 +1,0 @@
-resource_group_name  = "rg-tfstate"
-storage_account_name = "sttfstatefleet"
-container_name       = "tfstate"
-key                  = "fleetdm/prd/terraform.tfstate"

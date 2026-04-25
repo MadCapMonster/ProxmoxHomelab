@@ -1,0 +1,84 @@
+trigger:
+- main
+
+variables:
+- group: fleetdm-common
+
+stages:
+- stage: Dev
+  displayName: Deploy dev
+  jobs:
+  - job: TerraformAndAnsibleDev
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: self
+    - script: |
+        cd terraform/environments/dev
+        terraform init
+        terraform plan -out=tfplan
+        terraform apply -auto-approve tfplan
+      displayName: Terraform dev
+      env:
+        TF_VAR_pm_password: $(pm_password)
+    - script: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install ansible
+        ansible-galaxy collection install community.docker community.mysql
+        cd ansible
+        ansible-playbook -i inventory/dev.ini site.yml --vault-password-file $(ANSIBLE_VAULT_PASSWORD_FILE)
+      displayName: Ansible dev
+
+- stage: UAT
+  displayName: Deploy UAT
+  dependsOn: Dev
+  jobs:
+  - deployment: DeployUAT
+    environment: uat
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - script: |
+              cd terraform/environments/uat
+              terraform init
+              terraform plan -out=tfplan
+              terraform apply -auto-approve tfplan
+            displayName: Terraform UAT
+            env:
+              TF_VAR_pm_password: $(pm_password)
+          - script: |
+              python3 -m pip install --upgrade pip
+              python3 -m pip install ansible
+              ansible-galaxy collection install community.docker community.mysql
+              cd ansible
+              ansible-playbook -i inventory/uat.ini site.yml --vault-password-file $(ANSIBLE_VAULT_PASSWORD_FILE)
+            displayName: Ansible UAT
+
+- stage: PRD
+  displayName: Deploy PRD
+  dependsOn: UAT
+  jobs:
+  - deployment: DeployPRD
+    environment: prd
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - script: |
+              cd terraform/environments/prd
+              terraform init
+              terraform plan -out=tfplan
+              terraform apply -auto-approve tfplan
+            displayName: Terraform PRD
+            env:
+              TF_VAR_pm_password: $(pm_password)
+          - script: |
+              python3 -m pip install --upgrade pip
+              python3 -m pip install ansible
+              ansible-galaxy collection install community.docker community.mysql
+              cd ansible
+              ansible-playbook -i inventory/prd.ini site.yml --vault-password-file $(ANSIBLE_VAULT_PASSWORD_FILE)
+            displayName: Ansible PRD

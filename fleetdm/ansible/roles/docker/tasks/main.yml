@@ -1,0 +1,19 @@
+---
+- name: Install Docker packages from Ubuntu repository
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - docker-compose-v2
+    state: present
+
+- name: Enable Docker
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Add ubuntu user to docker group
+  ansible.builtin.user:
+    name: ubuntu
+    groups: docker
+    append: true

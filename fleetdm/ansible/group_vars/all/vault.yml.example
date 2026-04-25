@@ -1,0 +1,2 @@
+# Deprecated: use ansible/group_vars/all/credentials.yml.example instead.
+# Copy credentials.yml.example to credentials.yml and optionally encrypt it with ansible-vault.

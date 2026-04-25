@@ -1,0 +1,12 @@
+variable "name" { type = string }
+variable "target_node" { type = string }
+variable "clone_template" { type = string }
+variable "vmid" { type = number }
+variable "cores" { type = number }
+variable "memory" { type = number }
+variable "disk_size" { type = string }
+variable "storage" { type = string }
+variable "bridge" { type = string }
+variable "ip_address" { type = string }
+variable "gateway" { type = string }
+variable "ssh_public_key" { type = string }

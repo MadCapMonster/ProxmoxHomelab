@@ -1,0 +1,30 @@
+---
+fleet_app_ip: 192.168.68.240
+fleet_db_ip: 192.168.68.241
+fleet_redis_ip: 192.168.68.242
+
+fleet_http_port: 1337
+fleet_mysql_port: 3306
+fleet_redis_port: 6379
+
+fleet_mysql_host: "{{ fleet_db_ip }}"
+fleet_redis_host: "{{ fleet_redis_ip }}"
+
+fleet_server_url: "http://{{ fleet_app_ip }}:{{ fleet_http_port }}"
+fleet_tls_enabled: false
+
+fleet_mysql_image: mysql:8.0.44
+fleet_app_image: fleetdm/fleet:latest
+
+required_packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - python3-pip
+  - python3-docker
+  - acl
+
+# Credentials and users live in one file:
+#   ansible/group_vars/all/credentials.yml
+# Start by copying:
+#   cp ansible/group_vars/all/credentials.yml.example ansible/group_vars/all/credentials.yml

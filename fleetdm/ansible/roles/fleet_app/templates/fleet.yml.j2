@@ -1,0 +1,7 @@
+server:
+  address: 0.0.0.0:{{ fleet_http_port }}
+  tls: {{ fleet_tls_enabled | lower }}
+mysql:
+  address: {{ fleet_mysql_host }}:{{ fleet_mysql_port }}
+redis:
+  address: {{ fleet_redis_host }}:{{ fleet_redis_port }}

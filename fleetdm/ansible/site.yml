@@ -1,22 +1,31 @@
-- name: Common baseline
-  hosts: fleet
+---
+- name: Common OS baseline
+  hosts: fleet_all
   become: true
   roles:
     - common
 
-- name: Configure Fleet database
+- name: Install Docker where Docker Compose is used
+  hosts:
+    - fleet_app
+    - fleet_db
+  become: true
+  roles:
+    - docker
+
+- name: Deploy MySQL for Fleet
   hosts: fleet_db
   become: true
   roles:
-    - fleet_db
+    - fleet_mysql
 
-- name: Configure Fleet Redis
+- name: Deploy Redis for Fleet
   hosts: fleet_redis
   become: true
   roles:
     - fleet_redis
 
-- name: Configure Fleet application
+- name: Deploy Fleet app
   hosts: fleet_app
   become: true
   roles:

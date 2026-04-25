@@ -1,0 +1,21 @@
+services:
+  mysql:
+    image: {{ fleet_mysql_image }}
+    container_name: fleet-mysql
+    restart: unless-stopped
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --bind-address=0.0.0.0
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: "{{ fleet_mysql_root_password }}"
+      MYSQL_DATABASE: "{{ fleet_mysql_database }}"
+      MYSQL_USER: "{{ fleet_mysql_user }}"
+      MYSQL_PASSWORD: "{{ fleet_mysql_password }}"
+    ports:
+      - "{{ fleet_mysql_port }}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:
