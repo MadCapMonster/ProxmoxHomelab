@@ -1,0 +1,14 @@
+proxmox_endpoint = "https://192.168.68.X:8006/"
+proxmox_api_token = "root@pam!terraform=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+proxmox_node = "proxmox"
+template_vmid = 9000
+datastore_id = "local-lvm"
+bridge = "vmbr0"
+ci_user = "ubuntu"
+ssh_public_key = "ssh-ed25519 AAAA... you@example"
+gateway = "192.168.68.1"
+nameserver = "1.1.1.1"
+cidr = 24
+fleet_app_ip = "192.168.68.240"
+fleet_db_ip = "192.168.68.241"
+fleet_redis_ip = "192.168.68.242"

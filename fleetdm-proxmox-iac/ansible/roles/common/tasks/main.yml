@@ -1,0 +1,21 @@
+---
+- name: Install common packages
+  ansible.builtin.apt:
+    name: [curl, jq, unzip, ca-certificates, gnupg, python3-pymysql]
+    state: present
+    update_cache: true
+
+- name: Enable UFW default deny inbound
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+
+- name: Allow SSH
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled

@@ -1,0 +1,15 @@
+services:
+  fleet:
+    image: fleetdm/fleet:{{ fleet_version }}
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      FLEET_MYSQL_ADDRESS: "{{ fleet_db_host }}:3306"
+      FLEET_MYSQL_DATABASE: "{{ fleet_db_name }}"
+      FLEET_MYSQL_USERNAME: "{{ fleet_db_user }}"
+      FLEET_MYSQL_PASSWORD: "{{ fleet_db_password }}"
+      FLEET_REDIS_ADDRESS: "{{ fleet_redis_host }}:6379"
+      FLEET_SERVER_ADDRESS: "0.0.0.0:8080"
+      FLEET_SERVER_TLS: "false"
+      FLEET_AUTH_JWT_KEY: "{{ fleet_jwt_key }}"

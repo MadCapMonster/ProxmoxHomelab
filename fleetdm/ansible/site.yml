@@ -1,0 +1,23 @@
+- name: Common baseline
+  hosts: fleet
+  become: true
+  roles:
+    - common
+
+- name: Configure Fleet database
+  hosts: fleet_db
+  become: true
+  roles:
+    - fleet_db
+
+- name: Configure Fleet Redis
+  hosts: fleet_redis
+  become: true
+  roles:
+    - fleet_redis
+
+- name: Configure Fleet application
+  hosts: fleet_app
+  become: true
+  roles:
+    - fleet_app

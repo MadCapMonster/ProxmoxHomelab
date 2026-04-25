@@ -1,0 +1,22 @@
+- name: Install Redis
+  ansible.builtin.apt:
+    name: redis-server
+    state: present
+
+- name: Bind Redis to private interface
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: '^bind '
+    line: "bind 127.0.0.1 ::1 {{ ansible_host }}"
+
+- name: Enable protected mode
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: '^protected-mode '
+    line: "protected-mode yes"
+
+- name: Ensure Redis is running
+  ansible.builtin.service:
+    name: redis-server
+    state: restarted
+    enabled: true

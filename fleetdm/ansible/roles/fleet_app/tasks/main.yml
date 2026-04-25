@@ -1,0 +1,29 @@
+- name: Install Docker engine from distro packages
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - docker-compose-v2
+    state: present
+
+- name: Ensure Docker is running
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Create Fleet directory
+  ansible.builtin.file:
+    path: /opt/fleetdm
+    state: directory
+    mode: '0750'
+
+- name: Render Docker Compose file
+  ansible.builtin.template:
+    src: fleet-compose.yml.j2
+    dest: /opt/fleetdm/docker-compose.yml
+    mode: '0640'
+
+- name: Start Fleet app
+  community.docker.docker_compose_v2:
+    project_src: /opt/fleetdm
+    state: present

@@ -1,0 +1,16 @@
+[Unit]
+Description=FleetDM server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=fleet
+Group=fleet
+EnvironmentFile=/etc/fleet/fleet.env
+ExecStart=/usr/local/bin/fleet serve
+Restart=always
+RestartSec=5
+LimitNOFILE=8192
+
+[Install]
+WantedBy=multi-user.target

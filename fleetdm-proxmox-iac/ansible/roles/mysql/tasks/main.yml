@@ -1,0 +1,47 @@
+---
+- name: Install MySQL server
+  ansible.builtin.apt:
+    name: mysql-server
+    state: present
+    update_cache: true
+
+- name: Bind MySQL to all interfaces or your private subnet interface
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = 0.0.0.0'
+  notify: Restart mysql
+
+- name: Create Fleet database
+  community.mysql.mysql_db:
+    name: "{{ fleet_mysql_database }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create Fleet database user from app host
+  community.mysql.mysql_user:
+    name: "{{ fleet_mysql_user }}"
+    password: "{{ fleet_mysql_password }}"
+    host: "{{ hostvars[groups['fleet_app'][0]].ansible_host }}"
+    priv: "{{ fleet_mysql_database }}.*:ALL"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Allow MySQL from app host
+  community.general.ufw:
+    rule: allow
+    port: "3306"
+    proto: tcp
+    from_ip: "{{ hostvars[groups['fleet_app'][0]].ansible_host }}"
+
+- name: Ensure MySQL is enabled
+  ansible.builtin.service:
+    name: mysql
+    enabled: true
+    state: started
+
+handlers:
+  - name: Restart mysql
+    ansible.builtin.service:
+      name: mysql
+      state: restarted

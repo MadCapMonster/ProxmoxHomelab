@@ -1,0 +1,24 @@
+---
+- name: Configure FleetDM platform
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Configure MySQL for Fleet
+  hosts: fleet_db
+  become: true
+  roles:
+    - mysql
+
+- name: Configure Redis for Fleet
+  hosts: fleet_redis
+  become: true
+  roles:
+    - redis
+
+- name: Configure Fleet application
+  hosts: fleet_app
+  become: true
+  roles:
+    - fleet_app
